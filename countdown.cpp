@@ -14,7 +14,7 @@ int main ()
 {
   system("clear");
   /*Initialize GPIO communication*/
-  gpioHandle gpio = gpioHandle();
+  gpioHandle gpio;
   gpio.initializePin(60,0,0);
   gpio.initializePin(30,0,0);
 
