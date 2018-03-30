@@ -3,20 +3,27 @@
 #include <iostream>
 #include <cstdlib>
 #include <unistd.h>
-
+#define IGNITION 60
+#define OXIDIZER 50
 using namespace std;
 
-char * launchCode = "Fly you Fools!";
+string launchCode = "Fly you Fools!";
 int valveOpenTime = 2;
-int ignitionKeepOnTime = 10;
+int ignitionKeepOnTime = 2;
+int engineOnTime = 10;
 
 int main ()
 {
+  int res;
   system("clear");
   /*Initialize GPIO communication*/
   gpioHandle gpio;
-  gpio.initializePin(60,0,0);
-  gpio.initializePin(30,0,0);
+  res = gpio.initializePin(IGNITION,0,0);
+  if (res != 0)
+    cout << "Ignition initialization failed" << endl;
+  res = gpio.initializePin(OXIDIZER,0,0);
+  if (res != 0)
+    cout << "Oxidizer initialization failed" << endl;
 
 
   /*Set rocket to launch if code correct*/
@@ -24,32 +31,49 @@ int main ()
   cout << "ready to launch!" << endl;
   cout << "To cancel: press 'Control' and 'C' simultaneously." << endl;
   cout << "To start countdown: Enter the phrase: 'Fly you Fools!' and press enter." << endl;
-  cin >> enteredCode;
+  getline(cin,enteredCode);
   if (enteredCode == "Fly you Fools!"){
     cout << "\nLaunch Initiated" << endl;
-    cout << "Clear all personelle from the launch zone" << endl;
+    cout << "Clear all personnel from the launch zone" << endl;
     /* Launch Countdown*/
-    for (int i = 15; i >= 0; i--){
+    for (int i = 7; i > valveOpenTime; i--){
+      cout << i << endl;
       sleep(1);
 	    }
+      gpio.setPinVal(OXIDIZER,1);
+    cout << "Opening valve" << endl;
+    for (int i = valveOpenTime; i >= 0; i--){
+      cout << i << endl;
+      sleep(1);
 
+    }
     /*Launching rocket*/
-    gpio.setPinVal(30,1);
-    sleep(ignitionKeepOnTime); //in air?
+    gpio.setPinVal(IGNITION,1);
+    cout << "Launching" << endl;
+    for (int i = 0; i < ignitionKeepOnTime; i++){
+      cout << i << endl;
+      sleep(1);
+  }
 
     /*Shut down rocket booster*/
-    gpio.setPinVal(30,0);
-    gpio.setPinVal(60,0);
+    //gpio.setPinVal(OXIDIZER,0);
+    gpio.setPinVal(IGNITION,0);
+    cout << "Ignition turned off" << endl;
+    for(int i = ignitionKeepOnTime; i < engineOnTime; i++){
+      cout << i << endl;
+      sleep(1);
+    }
+    gpio.setPinVal(OXIDIZER,0);
     cout << "Launch Complete!" << endl;
   } else {
     cout << "The launch phrase did not match! Aborting!" << endl;
   }//end else
   /*Sets the pin mode to IN*/
-  gpio.setPinMode(60,1,0);
-  gpio.setPinMode(30,1,0);
+  gpio.setPinMode(IGNITION,1,0);
+  gpio.setPinMode(OXIDIZER,1,0);
 
   /*Deconstructs the gpio*/
-  gpio.pinClose(30);
-  gpio.pinClose(60);
+  gpio.pinClose(OXIDIZER);
+  gpio.pinClose(IGNITION);
 
 }//ense main()
