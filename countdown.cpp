@@ -3,8 +3,10 @@
 #include <iostream>
 #include <cstdlib>
 #include <unistd.h>
-#define IGNITION 60
-#define OXIDIZER 50
+#define IGNITION 48
+#define OXIDIZER 51
+#define MAINPOWER 60
+
 using namespace std;
 
 string launchCode = "Fly you Fools!";
@@ -19,12 +21,18 @@ int main ()
   /*Initialize GPIO communication*/
   gpioHandle gpio;
   res = gpio.initializePin(IGNITION,0,0);
-  if (res != 0)
+  if (res != 0){
     cout << "Ignition initialization failed" << endl;
+    return(-1);
+  }
   res = gpio.initializePin(OXIDIZER,0,0);
-  if (res != 0)
+  if (res != 0){
     cout << "Oxidizer initialization failed" << endl;
-
+    return(-1);
+  }
+  res = gpio.initializePin(MAINPOWER,0,0);
+  if (res != 0)
+    cout << "Main power initialization failed" << endl;
 
   /*Set rocket to launch if code correct*/
   string enteredCode;
@@ -33,6 +41,7 @@ int main ()
   cout << "To start countdown: Enter the phrase: 'Fly you Fools!' and press enter." << endl;
   getline(cin,enteredCode);
   if (enteredCode == "Fly you Fools!"){
+    gpio.setPinVal(MAINPOWER,1);
     cout << "\nLaunch Initiated" << endl;
     cout << "Clear all personnel from the launch zone" << endl;
     /* Launch Countdown*/
@@ -73,7 +82,9 @@ int main ()
   gpio.setPinMode(OXIDIZER,1,0);
 
   /*Deconstructs the gpio*/
+  //don't shut off the main power
   gpio.pinClose(OXIDIZER);
   gpio.pinClose(IGNITION);
+  return(0);
 
 }//ense main()
