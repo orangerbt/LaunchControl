@@ -81,12 +81,13 @@ int main ()
   gpio.setPinMode(IGNITION,1,0);
   gpio.setPinMode(OXIDIZER,1,0);
 
+
   /*Deconstructs the gpio*/
   //don't shut off the main power
 
   gpio.pinClose(OXIDIZER);
   gpio.pinClose(IGNITION);
-  gpio.pinClose(MAINPOWER);
+  gpio.setPinVal(MAINPOWER,0);
   return(0);
 
 }//ense main()
