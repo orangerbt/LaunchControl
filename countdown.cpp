@@ -83,8 +83,10 @@ int main ()
 
   /*Deconstructs the gpio*/
   //don't shut off the main power
+
   gpio.pinClose(OXIDIZER);
   gpio.pinClose(IGNITION);
+  gpio.pinClose(MAINPOWER);
   return(0);
 
 }//ense main()
